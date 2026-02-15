@@ -1,0 +1,155 @@
+Prompt to Generate a Premium Diary Website (Like Medium)
+
+Prompt:
+
+Create a modern, premium personal diary web app similar to Medium with a clean and minimal UI.
+
+🎯 Purpose
+
+This is a private personal diary website where I can:
+
+Write daily thoughts
+
+Track how my day went
+
+Set goals
+
+Maintain a to-do list
+
+View entries day-wise (like a timeline/calendar)
+
+🎨 UI/UX Requirements
+
+Premium, clean UI like Medium
+
+Minimalist design with good typography
+
+Soft colors (white/cream/black theme)
+
+Smooth animations and transitions
+
+Responsive design (mobile + desktop)
+
+Modern dashboard layout
+
+Sidebar navigation
+
+🧩 Pages/Sections Needed
+1. Dashboard (Home)
+
+Welcome message
+
+Today’s date
+
+Quick summary of today
+
+Button: “Write Today’s Entry”
+
+Show recent entries
+
+2. Daily Entry Page
+
+Each day should have its own entry with:
+
+Date (auto)
+
+Title
+
+“How was my day?” text editor (rich text like Medium)
+
+Mood selector (happy, normal, sad, productive etc)
+
+Goals section
+
+To-Do list with checkbox
+
+Notes/thoughts section
+
+Save button
+
+3. Timeline / Day-wise View
+
+Calendar or timeline view
+
+Click any date → open that day's diary
+
+Show mood + summary preview
+
+4. Goals Page
+
+Add long-term goals
+
+Track progress
+
+Mark completed
+
+5. To-Do Manager
+
+Daily tasks
+
+Mark complete
+
+Auto save per day
+
+🧠 Features
+
+Day-wise diary storage
+
+Edit old entries
+
+Delete entries
+
+Search entries
+
+Dark/light mode toggle
+
+Smooth animations
+
+Authentication (login/signup for personal use)
+
+🗄 Database Integration
+
+Prepare for database connection (I will connect later).
+Use proper backend structure and APIs.
+
+Database structure suggestion:
+
+Users
+
+DiaryEntries (date, title, content, mood, notes)
+
+Todos
+
+Goals
+
+Use clean modular code.
+
+⚙️ Tech Stack (Modern)
+
+Use modern stack:
+
+Frontend: React + Tailwind CSS (premium UI)
+
+Backend: Node.js + Express
+
+Database ready: MongoDB or PostgreSQL
+
+Use REST API
+
+Clean folder structure
+
+✨ Extra Premium Touch
+
+Medium-like editor
+
+Smooth hover effects
+
+Elegant fonts
+
+Minimal aesthetic
+
+Beautiful empty states
+
+Loading animations
+
+Generate full working code with components and structure.
