@@ -2,9 +2,7 @@
 
 A beautiful, feature-rich diary application with goals tracking and task management.
 
-![Premium Diary](https://img.shields.io/badge/Status-Production%20Ready-success)
-![Vercel](https://img.shields.io/badge/Deploy-Vercel-black)
-![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-blue)
+
 
 ## ✨ Features
 
@@ -16,37 +14,6 @@ A beautiful, feature-rich diary application with goals tracking and task managem
 - 📱 **Responsive** - Works on all devices
 - 🎨 **Beautiful UI** - Modern design with Tailwind CSS
 
-## 🚀 Quick Deploy to Vercel
-
-### Prerequisites
-- Node.js 18+ installed
-- Vercel account (free)
-- Neon database account (free)
-
-### 3-Step Deployment
-
-1. **Create Database:**
-   - Go to https://neon.tech
-   - Create free PostgreSQL database
-   - Copy connection string
-
-2. **Set Up Tables:**
-   ```bash
-   export DATABASE_URL="your_neon_connection_string"
-   npm run db:push
-   ```
-
-3. **Deploy:**
-   ```bash
-   npm install -g vercel
-   vercel login
-   vercel env add DATABASE_URL  # Paste your connection string
-   vercel --prod
-   ```
-
-**Done!** Your app is live! 🎉
-
-📖 **Detailed Guide:** See [VERCEL_QUICKSTART.md](VERCEL_QUICKSTART.md)
 
 ## 🛠️ Tech Stack
 
