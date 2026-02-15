@@ -10,8 +10,8 @@ import Home from "@/pages/Home";
 import Landing from "@/pages/Landing";
 import DiaryList from "@/pages/DiaryList";
 import EntryEditor from "@/pages/EntryEditor";
-import Timeline from "@/pages/Timeline";
 import Goals from "@/pages/Goals";
+import GoalDetails from "@/pages/GoalDetails";
 import Todos from "@/pages/Todos";
 import NotFound from "@/pages/not-found";
 
@@ -49,7 +49,7 @@ function Router() {
       <Route path="/">
         {user ? <Home /> : <Landing />}
       </Route>
-      
+
       {/* Protected Routes */}
       <Route path="/diary">
         <ProtectedRoute component={DiaryList} />
@@ -57,11 +57,11 @@ function Router() {
       <Route path="/diary/:id">
         <ProtectedRoute component={EntryEditor} />
       </Route>
-      <Route path="/timeline">
-        <ProtectedRoute component={Timeline} />
-      </Route>
       <Route path="/goals">
         <ProtectedRoute component={Goals} />
+      </Route>
+      <Route path="/goals/:id">
+        <ProtectedRoute component={GoalDetails} />
       </Route>
       <Route path="/todos">
         <ProtectedRoute component={Todos} />

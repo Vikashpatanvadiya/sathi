@@ -101,7 +101,7 @@ export default function EntryEditor() {
             className="space-y-8"
           >
             {/* Meta Controls */}
-            <div className="flex flex-wrap gap-4 items-center justify-between border-b border-border/40 pb-6">
+            <div className="flex flex-wrap gap-4 items-center border-b border-border/40 pb-6">
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -124,10 +124,6 @@ export default function EntryEditor() {
                   />
                 </PopoverContent>
               </Popover>
-
-              <div className="flex-1 min-w-[200px]">
-                <MoodSelector value={mood} onChange={setMood} />
-              </div>
             </div>
 
             {/* Editor Area */}

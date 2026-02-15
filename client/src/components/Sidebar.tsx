@@ -1,11 +1,10 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { 
-  BookOpen, 
-  CalendarDays, 
-  Target, 
-  CheckSquare, 
-  LogOut, 
+import {
+  BookOpen,
+  Target,
+  CheckSquare,
+  LogOut,
   Plus,
   Home
 } from "lucide-react";
@@ -20,18 +19,15 @@ export function Sidebar() {
   const navItems = [
     { href: "/", label: "Dashboard", icon: Home },
     { href: "/diary", label: "Entries", icon: BookOpen },
-    { href: "/timeline", label: "Timeline", icon: CalendarDays },
     { href: "/goals", label: "Goals", icon: Target },
     { href: "/todos", label: "Tasks", icon: CheckSquare },
   ];
 
   return (
     <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border hidden md:flex flex-col">
-      <div className="p-8 pb-4">
-        <h1 className="text-2xl font-serif font-bold text-foreground tracking-tight">
-          Memoir
-        </h1>
-        <p className="text-xs text-muted-foreground mt-1 tracking-wider uppercase">Personal Journal</p>
+      <div className="p-6">
+        <h1 className="text-2xl font-serif font-bold text-primary">Sathi</h1>
+        <p className="text-xs text-muted-foreground tracking-widest mt-1">ACHIEVE MORE</p>
       </div>
 
       <div className="px-4 mb-8">
@@ -77,7 +73,7 @@ export function Sidebar() {
               {user?.email}
             </p>
           </div>
-          <button 
+          <button
             onClick={() => logout()}
             className="text-muted-foreground hover:text-destructive transition-colors p-1"
             title="Log out"

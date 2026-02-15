@@ -67,7 +67,7 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).claims.sub;
       const id = Number(req.params.id);
-      
+
       const existing = await storage.getDiaryEntry(id);
       if (!existing) return res.status(404).json({ message: "Entry not found" });
       if (existing.userId !== userId) return res.status(401).json({ message: "Unauthorized" });
@@ -91,7 +91,7 @@ export async function registerRoutes(
   app.delete(api.diary.delete.path, isAuthenticated, async (req, res) => {
     const userId = (req.user as any).claims.sub;
     const id = Number(req.params.id);
-    
+
     const existing = await storage.getDiaryEntry(id);
     if (!existing) return res.status(404).json({ message: "Entry not found" });
     if (existing.userId !== userId) return res.status(401).json({ message: "Unauthorized" });
@@ -130,11 +130,11 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).claims.sub;
       const id = Number(req.params.id);
-      
+
       const existing = await db.select().from(goals).where(eq(goals.id, id)).then(res => res[0]);
       if (!existing) return res.status(404).json({ message: "Goal not found" });
       if (existing.userId !== userId) return res.status(401).json({ message: "Unauthorized" });
-      
+
       const input = api.goals.update.input.parse(req.body);
       const updates = { ...input };
       if (input.targetDate) updates.targetDate = new Date(input.targetDate);
@@ -142,8 +142,8 @@ export async function registerRoutes(
       const updated = await storage.updateGoal(id, updates);
       res.json(updated);
     } catch (err) {
-       if (err instanceof z.ZodError) return res.status(400).json({ message: err.message });
-       throw err;
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.message });
+      throw err;
     }
   });
 
@@ -170,12 +170,15 @@ export async function registerRoutes(
     try {
       const userId = (req.user as any).claims.sub;
       const input = api.todos.create.input.parse(req.body);
+
       const todoData = {
         ...input,
         date: input.date ? new Date(input.date) : undefined,
         userId,
       };
+
       const todo = await storage.createTodo(todoData);
+
       res.status(201).json(todo);
     } catch (err) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.message });
@@ -197,6 +200,7 @@ export async function registerRoutes(
       if (input.date) updates.date = new Date(input.date);
 
       const updated = await storage.updateTodo(id, updates);
+
       res.json(updated);
     } catch (err) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.message });
@@ -212,6 +216,7 @@ export async function registerRoutes(
     if (existing.userId !== userId) return res.status(401).json({ message: "Unauthorized" });
 
     await storage.deleteTodo(id);
+
     res.status(204).send();
   });
 

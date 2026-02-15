@@ -9,7 +9,7 @@ export function useTodos(date?: string) {
     queryFn: async () => {
       const url = new URL(api.todos.list.path, window.location.origin);
       if (date) url.searchParams.append("date", date);
-      
+
       const res = await fetch(url.toString(), { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch todos");
       return api.todos.list.responses[200].parse(await res.json());
@@ -34,6 +34,7 @@ export function useCreateTodo() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.todos.list.path] });
+      queryClient.invalidateQueries({ queryKey: [api.goals.list.path] });
       toast({ title: "Task Added", description: "Added to your list." });
     },
   });
@@ -41,7 +42,7 @@ export function useCreateTodo() {
 
 export function useUpdateTodo() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ id, ...updates }: { id: number } & Partial<InsertTodo>) => {
       const url = buildUrl(api.todos.update.path, { id });
@@ -56,6 +57,7 @@ export function useUpdateTodo() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.todos.list.path] });
+      queryClient.invalidateQueries({ queryKey: [api.goals.list.path] });
     },
   });
 }
@@ -75,6 +77,7 @@ export function useDeleteTodo() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.todos.list.path] });
+      queryClient.invalidateQueries({ queryKey: [api.goals.list.path] });
       toast({ title: "Task Deleted" });
     },
   });

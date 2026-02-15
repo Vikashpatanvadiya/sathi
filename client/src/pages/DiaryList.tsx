@@ -1,9 +1,9 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Sidebar } from "@/components/Sidebar";
-import { useDiaryEntries } from "@/hooks/use-diary";
+import { useDiaryEntries, useDeleteDiaryEntry } from "@/hooks/use-diary";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
-import { Loader2, Plus, Calendar as CalendarIcon, Search } from "lucide-react";
+import { Loader2, Plus, Calendar as CalendarIcon, Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
@@ -12,11 +12,20 @@ import { useState } from "react";
 export default function DiaryList() {
   const [searchTerm, setSearchTerm] = useState("");
   const { data: entries, isLoading } = useDiaryEntries();
+  const deleteDiaryEntry = useDeleteDiaryEntry();
 
   const filteredEntries = entries?.filter(entry => 
     entry.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
     entry.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleDelete = (e: React.MouseEvent, entryId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (confirm('Delete this diary entry?')) {
+      deleteDiaryEntry.mutate(entryId);
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -65,9 +74,10 @@ export default function DiaryList() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
+                    className="relative group"
                   >
                     <Link href={`/diary/${entry.id}`}>
-                      <div className="group bg-card hover:bg-secondary/20 p-6 rounded-2xl border border-border/40 hover:border-primary/20 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md">
+                      <div className="bg-card hover:bg-secondary/20 p-6 rounded-2xl border border-border/40 hover:border-primary/20 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md">
                         <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-6 mb-3">
                           <h2 className="text-xl font-bold font-serif group-hover:text-primary transition-colors">
                             {entry.title}
@@ -80,13 +90,15 @@ export default function DiaryList() {
                         <p className="text-muted-foreground leading-relaxed line-clamp-3">
                           {entry.content}
                         </p>
-                        <div className="mt-4 flex gap-2">
-                          <span className="text-xs px-2 py-1 rounded-full bg-secondary text-secondary-foreground font-medium capitalize">
-                            {entry.mood}
-                          </span>
-                        </div>
                       </div>
                     </Link>
+                    <button
+                      onClick={(e) => handleDelete(e, entry.id)}
+                      className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
+                      title="Delete entry"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </motion.div>
                 ))
               )}

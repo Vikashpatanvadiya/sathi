@@ -27,14 +27,17 @@ export const goals = pgTable("goals", {
   targetDate: timestamp("target_date"),
   isCompleted: boolean("is_completed").default(false),
   progress: integer("progress").default(0), // 0-100
+  rewardImage: text("reward_image"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const todos = pgTable("todos", {
   id: serial("id").primaryKey(),
   userId: text("user_id").notNull().references(() => users.id),
+  goalId: integer("goal_id").references(() => goals.id),
   title: text("title").notNull(),
   date: timestamp("date"), // For daily tasks
+  priority: text("priority").default("Medium"), // Low, Medium, High
   isCompleted: boolean("is_completed").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -47,17 +50,22 @@ export const diaryEntriesRelations = relations(diaryEntries, ({ one }) => ({
   }),
 }));
 
-export const goalsRelations = relations(goals, ({ one }) => ({
+export const goalsRelations = relations(goals, ({ one, many }) => ({
   user: one(users, {
     fields: [goals.userId],
     references: [users.id],
   }),
+  todos: many(todos),
 }));
 
 export const todosRelations = relations(todos, ({ one }) => ({
   user: one(users, {
     fields: [todos.userId],
     references: [users.id],
+  }),
+  goal: one(goals, {
+    fields: [todos.goalId],
+    references: [goals.id],
   }),
 }));
 
@@ -67,18 +75,27 @@ export const insertDiaryEntrySchema = createInsertSchema(diaryEntries).omit({
   userId: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  date: z.coerce.date(),
 });
 
 export const insertGoalSchema = createInsertSchema(goals).omit({
   id: true,
   userId: true,
   createdAt: true,
+}).extend({
+  targetDate: z.coerce.date().optional(),
+  rewardImage: z.string().optional().nullable(),
 });
 
 export const insertTodoSchema = createInsertSchema(todos).omit({
   id: true,
   userId: true,
   createdAt: true,
+}).extend({
+  date: z.coerce.date().optional(),
+  priority: z.enum(["Low", "Medium", "High"]).default("Medium"),
+  goalId: z.number().optional().nullable(),
 });
 
 // Types

@@ -1,11 +1,13 @@
+import { Link } from "wouter";
 import { type Goal } from "@shared/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Calendar, Trash2, Edit2, CheckCircle2 } from "lucide-react";
+import { Calendar, Trash2, Edit2 } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
 import { useDeleteGoal, useUpdateGoal } from "@/hooks/use-goals";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -23,32 +25,44 @@ export function GoalCard({ goal }: { goal: Goal }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(goal.title);
   const [editDesc, setEditDesc] = useState(goal.description || "");
-  const [editProgress, setEditProgress] = useState(goal.progress || 0);
 
   const handleUpdate = () => {
     updateGoal.mutate({
       id: goal.id,
       title: editTitle,
       description: editDesc,
-      progress: Number(editProgress),
-      isCompleted: Number(editProgress) === 100,
+      isCompleted: goal.isCompleted,
     });
     setIsEditing(false);
+  };
+
+  const toggleComplete = (checked: boolean) => {
+    updateGoal.mutate({
+      id: goal.id,
+      isCompleted: checked,
+    });
   };
 
   return (
     <Card className="hover:shadow-lg transition-all duration-300 group border border-border/60 bg-card">
       <CardHeader className="flex flex-row items-start justify-between pb-2">
         <div className="space-y-1">
-          <CardTitle className="text-lg font-serif font-semibold leading-none tracking-tight">
-            {goal.title}
-          </CardTitle>
-          {goal.targetDate && (
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
-              <Calendar className="w-3 h-3" />
-              Due {format(new Date(goal.targetDate), "MMM d, yyyy")}
-            </p>
-          )}
+          <Link href={`/goals/${goal.id}`}>
+            <a className="block hover:opacity-80 transition-opacity">
+              <CardTitle className={cn(
+                "text-lg font-serif font-semibold leading-none tracking-tight",
+                goal.isCompleted && "line-through text-muted-foreground"
+              )}>
+                {goal.title}
+              </CardTitle>
+              {goal.targetDate && (
+                <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                  <Calendar className="w-3 h-3" />
+                  Due {format(new Date(goal.targetDate), "MMM d, yyyy")}
+                </p>
+              )}
+            </a>
+          </Link>
         </div>
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <Dialog open={isEditing} onOpenChange={setIsEditing}>
@@ -70,25 +84,14 @@ export function GoalCard({ goal }: { goal: Goal }) {
                   <Label>Description</Label>
                   <Textarea value={editDesc} onChange={(e) => setEditDesc(e.target.value)} />
                 </div>
-                <div className="space-y-2">
-                  <Label>Progress ({editProgress}%)</Label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={editProgress}
-                    onChange={(e) => setEditProgress(Number(e.target.value))}
-                    className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
-                  />
-                </div>
                 <Button onClick={handleUpdate} className="w-full">Save Changes</Button>
               </div>
             </DialogContent>
           </Dialog>
 
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="h-8 w-8 text-muted-foreground hover:text-destructive"
             onClick={() => deleteGoal.mutate(goal.id)}
           >
@@ -101,19 +104,6 @@ export function GoalCard({ goal }: { goal: Goal }) {
           <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
             {goal.description}
           </p>
-        )}
-        <div className="space-y-2">
-          <div className="flex justify-between text-xs font-medium">
-            <span>Progress</span>
-            <span>{goal.progress || 0}%</span>
-          </div>
-          <Progress value={goal.progress || 0} className="h-2 bg-secondary" />
-        </div>
-        {goal.isCompleted && (
-          <div className="mt-4 flex items-center gap-2 text-green-600 text-sm font-medium">
-            <CheckCircle2 className="w-4 h-4" />
-            <span>Completed</span>
-          </div>
         )}
       </CardContent>
     </Card>
