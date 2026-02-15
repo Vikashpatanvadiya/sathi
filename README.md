@@ -198,12 +198,6 @@ Contributions welcome! Please:
 3. Make your changes
 4. Submit a pull request
 
-## 📧 Support
-
-For issues or questions:
-- Check [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md)
-- Review [DEPLOYMENT.md](DEPLOYMENT.md)
-- Open an issue on GitHub
 
 ## 🎉 Acknowledgments
 
@@ -216,6 +210,5 @@ Built with:
 
 ---
 
-**Ready to deploy?** Follow [VERCEL_QUICKSTART.md](VERCEL_QUICKSTART.md) for a 5-minute setup! 🚀
 
 Made with ❤️ for personal productivity
