@@ -1,4 +1,3 @@
-import { useAuth } from "@/hooks/use-auth";
 import { Sidebar } from "@/components/Sidebar";
 import { useDiaryEntries, useDeleteDiaryEntry } from "@/hooks/use-diary";
 import { format } from "date-fns";

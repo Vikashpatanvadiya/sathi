@@ -23,7 +23,7 @@ export async function registerRoutes(
 ): Promise<Server> {
   // Diary Routes
   app.get(api.diary.list.path, async (req, res) => {
-    const userId = "public-user"; // Single user for public app
+    const userId = "bansi"; // Hardcoded user
     const { month, year } = req.query as { month?: string; year?: string };
     const entries = await storage.getDiaryEntries(userId, month, year);
     res.json(entries);
@@ -37,7 +37,7 @@ export async function registerRoutes(
 
   app.post(api.diary.create.path, async (req, res) => {
     try {
-      const userId = "public-user";
+      const userId = "bansi";
       const input = api.diary.create.input.parse(req.body);
       const entryData = {
         ...input,
@@ -86,14 +86,14 @@ export async function registerRoutes(
 
   // Goals Routes
   app.get(api.goals.list.path, async (req, res) => {
-    const userId = "public-user";
+    const userId = "bansi";
     const goals = await storage.getGoals(userId);
     res.json(goals);
   });
 
   app.post(api.goals.create.path, async (req, res) => {
     try {
-      const userId = "public-user";
+      const userId = "bansi";
       const input = api.goals.create.input.parse(req.body);
       const goalData = {
         ...input,
@@ -138,7 +138,7 @@ export async function registerRoutes(
 
   // Todos Routes
   app.get(api.todos.list.path, async (req, res) => {
-    const userId = "public-user";
+    const userId = "bansi";
     const { date } = req.query as { date?: string };
     const todos = await storage.getTodos(userId, date);
     res.json(todos);
@@ -146,7 +146,7 @@ export async function registerRoutes(
 
   app.post(api.todos.create.path, async (req, res) => {
     try {
-      const userId = "public-user";
+      const userId = "bansi";
       const input = api.todos.create.input.parse(req.body);
       const todoData = {
         ...input,

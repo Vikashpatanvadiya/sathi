@@ -1,4 +1,3 @@
-import { useAuth } from "@/hooks/use-auth";
 import { Sidebar } from "@/components/Sidebar";
 import { useDiaryEntries } from "@/hooks/use-diary";
 import { useTodos } from "@/hooks/use-todos";
@@ -10,7 +9,6 @@ import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function Home() {
-  const { user } = useAuth();
   const { data: entries, isLoading: isLoadingEntries } = useDiaryEntries();
   const { data: todos, isLoading: isLoadingTodos } = useTodos(format(new Date(), 'yyyy-MM-dd'));
 
@@ -33,7 +31,7 @@ export default function Home() {
               {format(new Date(), "EEEE, MMMM do, yyyy")}
             </p>
             <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
-              Welcome back, {user?.firstName}.
+              Welcome back, Bansi.
             </h1>
             <p className="text-lg text-muted-foreground max-w-xl">
               Ready to document your journey today?

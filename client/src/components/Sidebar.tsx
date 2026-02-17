@@ -4,17 +4,13 @@ import {
   BookOpen,
   Target,
   CheckSquare,
-  LogOut,
   Plus,
   Home
 } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
 export function Sidebar() {
   const [location] = useLocation();
-  const { user, logout } = useAuth();
 
   const navItems = [
     { href: "/", label: "Dashboard", icon: Home },
@@ -58,30 +54,6 @@ export function Sidebar() {
           );
         })}
       </nav>
-
-      <div className="p-4 mt-auto border-t border-border/50">
-        <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-secondary/50 transition-colors">
-          <Avatar className="h-9 w-9 border border-border">
-            <AvatarImage src={user?.profileImageUrl} alt={user?.firstName || 'User'} />
-            <AvatarFallback>{user?.firstName?.[0] || 'U'}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 overflow-hidden">
-            <p className="text-sm font-medium truncate text-foreground">
-              {user?.firstName} {user?.lastName}
-            </p>
-            <p className="text-xs text-muted-foreground truncate">
-              {user?.email}
-            </p>
-          </div>
-          <button
-            onClick={() => logout()}
-            className="text-muted-foreground hover:text-destructive transition-colors p-1"
-            title="Log out"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
     </aside>
   );
 }
