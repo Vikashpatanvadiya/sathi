@@ -1,7 +1,8 @@
 import { Express, Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import session from "express-session";
-import { db } from "./db";
+import connectPgSimple from "connect-pg-simple";
+import { db, pool } from "./db";
 import { users } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
@@ -11,9 +12,18 @@ declare module "express-session" {
   }
 }
 
+const PgSession = connectPgSimple(session);
+
 export function setupAuth(app: Express) {
+  app.set('trust proxy', 1); // Trust first proxy for Vercel
+  
   app.use(
     session({
+      store: new PgSession({
+        pool: pool,
+        tableName: 'sessions',
+        createTableIfMissing: true,
+      }),
       secret: process.env.SESSION_SECRET || "your-secret-key-change-in-production",
       resave: false,
       saveUninitialized: false,
@@ -21,6 +31,7 @@ export function setupAuth(app: Express) {
         secure: process.env.NODE_ENV === "production",
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       },
     })
   );
@@ -69,6 +80,14 @@ export function registerAuthRoutes(app: Express) {
 
       // Set session
       req.session.userId = newUser.id;
+      
+      // Save session explicitly
+      await new Promise<void>((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
 
       res.status(201).json({
         id: newUser.id,
@@ -110,6 +129,14 @@ export function registerAuthRoutes(app: Express) {
 
       // Set session
       req.session.userId = user.id;
+      
+      // Save session explicitly
+      await new Promise<void>((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
 
       res.json({
         id: user.id,
