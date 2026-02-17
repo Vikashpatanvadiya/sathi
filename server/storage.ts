@@ -11,9 +11,8 @@ import {
   type Todo,
 } from "@shared/schema";
 import { eq, and, desc, gte, lte } from "drizzle-orm";
-import { authStorage, type IAuthStorage } from "./replit_integrations/auth/storage";
 
-export interface IStorage extends IAuthStorage {
+export interface IStorage {
   // Diary
   getDiaryEntries(userId: string, month?: string, year?: string): Promise<DiaryEntry[]>;
   getDiaryEntry(id: number): Promise<DiaryEntry | undefined>;
@@ -35,9 +34,6 @@ export interface IStorage extends IAuthStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  // Inherit auth methods
-  getUser = authStorage.getUser.bind(authStorage);
-  upsertUser = authStorage.upsertUser.bind(authStorage);
 
   // Diary
   async getDiaryEntries(userId: string, month?: string, year?: string): Promise<DiaryEntry[]> {
