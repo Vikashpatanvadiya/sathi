@@ -87,9 +87,26 @@ export default function DiaryList() {
                             {format(new Date(entry.date), "MMMM do, yyyy")}
                           </div>
                         </div>
-                        <p className="text-muted-foreground leading-relaxed line-clamp-3">
+                        <p className="text-muted-foreground leading-relaxed line-clamp-3 mb-3">
                           {entry.content}
                         </p>
+                        {entry.images && entry.images.length > 0 && (
+                          <div className="flex gap-2 mt-4 overflow-x-auto">
+                            {entry.images.slice(0, 3).map((img: string, imgIndex: number) => (
+                              <img
+                                key={imgIndex}
+                                src={img}
+                                alt={`Memory ${imgIndex + 1}`}
+                                className="w-20 h-20 object-cover rounded-lg border border-border"
+                              />
+                            ))}
+                            {entry.images.length > 3 && (
+                              <div className="w-20 h-20 rounded-lg border border-border bg-muted flex items-center justify-center text-xs text-muted-foreground">
+                                +{entry.images.length - 3}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </Link>
                     <button

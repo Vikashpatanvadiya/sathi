@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useRoute } from "wouter";
 import { Sidebar } from "@/components/Sidebar";
 import { useCreateDiaryEntry, useUpdateDiaryEntry, useDiaryEntry } from "@/hooks/use-diary";
@@ -7,11 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MoodSelector, type Mood } from "@/components/MoodSelector";
 import { format } from "date-fns";
-import { Loader2, ArrowLeft, Save, Calendar as CalendarIcon } from "lucide-react";
+import { Loader2, ArrowLeft, Save, Calendar as CalendarIcon, Image as ImageIcon, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 export default function EntryEditor() {
   const [, setLocation] = useLocation();
@@ -27,6 +28,10 @@ export default function EntryEditor() {
   const [content, setContent] = useState("");
   const [mood, setMood] = useState<Mood>("neutral");
   const [date, setDate] = useState<Date>(new Date());
+  const [images, setImages] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   // Load data when editing
   useEffect(() => {
@@ -35,8 +40,63 @@ export default function EntryEditor() {
       setContent(entry.content);
       setMood(entry.mood as Mood);
       setDate(new Date(entry.date));
+      setImages(entry.images || []);
     }
   }, [entry]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsUploading(true);
+    try {
+      const newImages: string[] = [];
+      
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        // Check file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          toast({
+            title: "File too large",
+            description: `${file.name} is larger than 5MB`,
+            variant: "destructive",
+          });
+          continue;
+        }
+
+        // Convert to base64
+        const reader = new FileReader();
+        const base64 = await new Promise<string>((resolve) => {
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(file);
+        });
+
+        newImages.push(base64);
+      }
+
+      setImages([...images, ...newImages]);
+      toast({
+        title: "Images added",
+        description: `${newImages.length} image(s) added successfully`,
+      });
+    } catch (error) {
+      toast({
+        title: "Upload failed",
+        description: "Failed to process images",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setImages(images.filter((_, i) => i !== index));
+  };
 
   const handleSave = async () => {
     if (!title || !content) return;
@@ -49,6 +109,7 @@ export default function EntryEditor() {
           content,
           mood,
           date: date.toISOString(),
+          images,
         });
       } else {
         await createMutation.mutateAsync({
@@ -57,6 +118,7 @@ export default function EntryEditor() {
           mood,
           date: date.toISOString(),
           notes: "",
+          images,
         });
       }
       setLocation("/diary");
@@ -124,7 +186,51 @@ export default function EntryEditor() {
                   />
                 </PopoverContent>
               </Popover>
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="gap-2"
+              >
+                {isUploading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <ImageIcon className="w-4 h-4" />
+                )}
+                Add Photos
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageUpload}
+                className="hidden"
+              />
             </div>
+
+            {/* Image Preview */}
+            {images.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {images.map((img, index) => (
+                  <div key={index} className="relative group rounded-lg overflow-hidden border border-border">
+                    <img
+                      src={img}
+                      alt={`Upload ${index + 1}`}
+                      className="w-full h-48 object-cover"
+                    />
+                    <button
+                      onClick={() => removeImage(index)}
+                      className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Editor Area */}
             <div className="space-y-6">

@@ -15,6 +15,7 @@ export const diaryEntries = pgTable("diary_entries", {
   content: text("content").notNull(),
   mood: text("mood").notNull(), // happy, normal, sad, productive, etc.
   notes: text("notes"),
+  images: jsonb("images").$type<string[]>().default([]),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -77,6 +78,7 @@ export const insertDiaryEntrySchema = createInsertSchema(diaryEntries).omit({
   updatedAt: true,
 }).extend({
   date: z.coerce.date(),
+  images: z.array(z.string()).optional(),
 });
 
 export const insertGoalSchema = createInsertSchema(goals).omit({

@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 
 import Home from "@/pages/Home";
-import Landing from "@/pages/Landing";
+import Login from "@/pages/Login";
 import DiaryList from "@/pages/DiaryList";
 import EntryEditor from "@/pages/EntryEditor";
 import Goals from "@/pages/Goals";
@@ -46,8 +46,12 @@ function Router() {
 
   return (
     <Switch>
+      <Route path="/login">
+        {user ? <Redirect to="/" /> : <Login />}
+      </Route>
+
       <Route path="/">
-        {user ? <Home /> : <Landing />}
+        {user ? <Home /> : <Redirect to="/login" />}
       </Route>
 
       {/* Protected Routes */}

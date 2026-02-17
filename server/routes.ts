@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
-import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
+import { setupAuth, registerAuthRoutes, isAuthenticated } from "./auth";
 import { diaryEntries, goals, todos } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
@@ -23,12 +23,12 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   // Setup Auth
-  await setupAuth(app);
+  setupAuth(app);
   registerAuthRoutes(app);
 
   // Diary Routes
   app.get(api.diary.list.path, isAuthenticated, async (req, res) => {
-    const userId = (req.user as any).claims.sub;
+    const userId = req.session.userId!;
     const { month, year } = req.query as { month?: string; year?: string };
     const entries = await storage.getDiaryEntries(userId, month, year);
     res.json(entries);
@@ -38,14 +38,14 @@ export async function registerRoutes(
     const entry = await storage.getDiaryEntry(Number(req.params.id));
     if (!entry) return res.status(404).json({ message: "Entry not found" });
     // Security check: ensure entry belongs to user
-    const userId = (req.user as any).claims.sub;
+    const userId = req.session.userId!;
     if (entry.userId !== userId) return res.status(401).json({ message: "Unauthorized" });
     res.json(entry);
   });
 
   app.post(api.diary.create.path, isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any).claims.sub;
+      const userId = req.session.userId!;
       const input = api.diary.create.input.parse(req.body);
       // Cast input.date to Date object if it's a string, though Zod should handle it if defined as date/string coercion
       const entryData = {
@@ -65,7 +65,7 @@ export async function registerRoutes(
 
   app.patch(api.diary.update.path, isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any).claims.sub;
+      const userId = req.session.userId!;
       const id = Number(req.params.id);
 
       const existing = await storage.getDiaryEntry(id);
@@ -89,7 +89,7 @@ export async function registerRoutes(
   });
 
   app.delete(api.diary.delete.path, isAuthenticated, async (req, res) => {
-    const userId = (req.user as any).claims.sub;
+    const userId = req.session.userId!;
     const id = Number(req.params.id);
 
     const existing = await storage.getDiaryEntry(id);
@@ -102,14 +102,14 @@ export async function registerRoutes(
 
   // Goals Routes
   app.get(api.goals.list.path, isAuthenticated, async (req, res) => {
-    const userId = (req.user as any).claims.sub;
+    const userId = req.session.userId!;
     const goals = await storage.getGoals(userId);
     res.json(goals);
   });
 
   app.post(api.goals.create.path, isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any).claims.sub;
+      const userId = req.session.userId!;
       const input = api.goals.create.input.parse(req.body);
       const goalData = {
         ...input,
@@ -128,7 +128,7 @@ export async function registerRoutes(
 
   app.patch(api.goals.update.path, isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any).claims.sub;
+      const userId = req.session.userId!;
       const id = Number(req.params.id);
 
       const existing = await db.select().from(goals).where(eq(goals.id, id)).then(res => res[0]);
@@ -148,7 +148,7 @@ export async function registerRoutes(
   });
 
   app.delete(api.goals.delete.path, isAuthenticated, async (req, res) => {
-    const userId = (req.user as any).claims.sub;
+    const userId = req.session.userId!;
     const id = Number(req.params.id);
     const existing = await db.select().from(goals).where(eq(goals.id, id)).then(res => res[0]);
     if (!existing) return res.status(404).json({ message: "Goal not found" });
@@ -160,7 +160,7 @@ export async function registerRoutes(
 
   // Todos Routes
   app.get(api.todos.list.path, isAuthenticated, async (req, res) => {
-    const userId = (req.user as any).claims.sub;
+    const userId = req.session.userId!;
     const { date } = req.query as { date?: string };
     const todos = await storage.getTodos(userId, date);
     res.json(todos);
@@ -168,7 +168,7 @@ export async function registerRoutes(
 
   app.post(api.todos.create.path, isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any).claims.sub;
+      const userId = req.session.userId!;
       const input = api.todos.create.input.parse(req.body);
 
       const todoData = {
@@ -188,7 +188,7 @@ export async function registerRoutes(
 
   app.patch(api.todos.update.path, isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any).claims.sub;
+      const userId = req.session.userId!;
       const id = Number(req.params.id);
 
       const existing = await db.select().from(todos).where(eq(todos.id, id)).then(res => res[0]);
@@ -209,7 +209,7 @@ export async function registerRoutes(
   });
 
   app.delete(api.todos.delete.path, isAuthenticated, async (req, res) => {
-    const userId = (req.user as any).claims.sub;
+    const userId = req.session.userId!;
     const id = Number(req.params.id);
     const existing = await db.select().from(todos).where(eq(todos.id, id)).then(res => res[0]);
     if (!existing) return res.status(404).json({ message: "Todo not found" });
