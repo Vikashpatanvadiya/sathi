@@ -29,7 +29,7 @@ export default function DiaryList() {
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
-      <main className="flex-1 md:ml-64 p-4 md:p-8 lg:p-12 overflow-y-auto">
+      <main className="flex-1 md:ml-64 pt-16 md:pt-0 p-4 md:p-8 lg:p-12 overflow-y-auto">
         <div className="max-w-4xl mx-auto space-y-8">
           
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

@@ -5,12 +5,17 @@ import {
   Target,
   CheckSquare,
   Plus,
-  Home
+  Home,
+  Menu,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export function Sidebar() {
   const [location] = useLocation();
+  const [open, setOpen] = useState(false);
 
   const navItems = [
     { href: "/", label: "Dashboard", icon: Home },
@@ -19,8 +24,8 @@ export function Sidebar() {
     { href: "/todos", label: "Tasks", icon: CheckSquare },
   ];
 
-  return (
-    <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border hidden md:flex flex-col">
+  const NavContent = () => (
+    <>
       <div className="p-6">
         <h1 className="text-2xl font-bold text-primary">Bansi.R</h1>
         <p className="text-xs text-muted-foreground tracking-widest mt-1">ACHIEVE MORE</p>
@@ -28,7 +33,7 @@ export function Sidebar() {
 
       <div className="px-4 mb-8">
         <Link href="/diary/new">
-          <Button className="w-full gap-2 shadow-lg shadow-primary/20 hover:shadow-xl transition-all">
+          <Button className="w-full gap-2 shadow-lg shadow-primary/20 hover:shadow-xl transition-all" onClick={() => setOpen(false)}>
             <Plus className="w-4 h-4" /> New Entry
           </Button>
         </Link>
@@ -40,6 +45,7 @@ export function Sidebar() {
           return (
             <Link key={item.href} href={item.href}>
               <div
+                onClick={() => setOpen(false)}
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer",
                   isActive
@@ -54,6 +60,32 @@ export function Sidebar() {
           );
         })}
       </nav>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile Header */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-card border-b border-border px-4 py-3 flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-primary">Bansi.R</h1>
+        </div>
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Menu className="w-6 h-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-0">
+            <NavContent />
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      {/* Desktop Sidebar */}
+      <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border hidden md:flex flex-col">
+        <NavContent />
+      </aside>
+    </>
   );
 }
