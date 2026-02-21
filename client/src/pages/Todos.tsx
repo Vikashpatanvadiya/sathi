@@ -17,14 +17,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 
 export default function Todos() {
   const [newTodo, setNewTodo] = useState("");
   const [selectedGoal, setSelectedGoal] = useState<string>("no-goal");
   const [priority, setPriority] = useState<"Low" | "Medium" | "High">("Medium");
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
-  const today = format(new Date(), 'yyyy-MM-dd');
-  const { data: todos, isLoading } = useTodos(today);
+  const dateString = format(selectedDate, 'yyyy-MM-dd');
+  const { data: todos, isLoading } = useTodos(dateString);
   const { data: goals } = useGoals();
 
   const createTodo = useCreateTodo();
@@ -38,7 +41,7 @@ export default function Todos() {
     await createTodo.mutateAsync({
       title: newTodo,
       isCompleted: false,
-      date: new Date().toISOString(),
+      date: selectedDate.toISOString(),
       priority,
       goalId: selectedGoal === "no-goal" ? null : Number(selectedGoal),
     });
@@ -69,11 +72,30 @@ export default function Todos() {
       <main className="flex-1 md:ml-64 p-4 md:p-8 lg:p-12 overflow-y-auto">
         <div className="max-w-3xl mx-auto space-y-8">
 
-          <div>
-            <h1 className="text-3xl font-serif font-bold text-foreground">Daily Tasks</h1>
-            <p className="text-muted-foreground mt-1">
-              Focus for {format(new Date(), "MMMM do, yyyy")}
-            </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-serif font-bold text-foreground">Daily Tasks</h1>
+              <p className="text-muted-foreground mt-1">
+                Focus for {format(selectedDate, "MMMM do, yyyy")}
+              </p>
+            </div>
+            
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <CalendarIcon className="w-4 h-4" />
+                  {format(selectedDate, "MMM d, yyyy")}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => date && setSelectedDate(date)}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
           <div className="bg-card p-4 rounded-xl border border-border/60 shadow-sm">

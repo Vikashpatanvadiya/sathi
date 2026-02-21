@@ -90,10 +90,36 @@ export class DatabaseStorage implements IStorage {
 
   // Todos
   async getTodos(userId: string, date?: string): Promise<Todo[]> {
-    let conditions = eq(todos.userId, userId);
-    // If date is provided, filter by it (assuming exact match or range needed later)
-    // For simplicity, returning all for user sorted by creation
-    return await db.select().from(todos).where(conditions).orderBy(desc(todos.createdAt));
+    if (date) {
+      // Filter by specific date (start and end of day)
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      console.log('Filtering todos for date:', date);
+      console.log('Start:', startOfDay, 'End:', endOfDay);
+      
+      return await db
+        .select()
+        .from(todos)
+        .where(
+          and(
+            eq(todos.userId, userId),
+            gte(todos.date, startOfDay),
+            lte(todos.date, endOfDay)
+          )
+        )
+        .orderBy(desc(todos.createdAt));
+    }
+    
+    // If no date provided, return all todos
+    return await db
+      .select()
+      .from(todos)
+      .where(eq(todos.userId, userId))
+      .orderBy(desc(todos.createdAt));
   }
 
   async createTodo(todo: InsertTodo & { userId: string }): Promise<Todo> {

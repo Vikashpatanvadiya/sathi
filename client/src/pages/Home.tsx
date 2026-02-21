@@ -34,7 +34,7 @@ export default function Home() {
               Welcome back, Bansi.
             </h1>
             <p className="text-lg text-muted-foreground max-w-xl">
-              Ready to document your journey today?
+              Lock the Fuck in !
             </p>
             <div className="pt-4">
               <Link href="/diary/new">

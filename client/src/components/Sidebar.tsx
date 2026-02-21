@@ -22,7 +22,7 @@ export function Sidebar() {
   return (
     <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border hidden md:flex flex-col">
       <div className="p-6">
-        <h1 className="text-2xl font-serif font-bold text-primary">Sathi</h1>
+        <h1 className="text-2xl font-bold text-primary">Bansi.R</h1>
         <p className="text-xs text-muted-foreground tracking-widest mt-1">ACHIEVE MORE</p>
       </div>
 
